@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prototipo flusso energia – D&amp;C Technical Partner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#060F12; --fg:#F5F3EA; --muted:#93A7B0;
+    --amber:#FFB84D; --teal:#2EE6B8;
+    --font-display:'Space Grotesk', system-ui, sans-serif;
+    --font-body:'IBM Plex Sans', system-ui, sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--fg);font-family:var(--font-body)}
+  body{-webkit-font-smoothing:antialiased}
+
+  .brand{position:fixed;top:max(18px, env(safe-area-inset-top));left:24px;z-index:20;
+    font-family:var(--font-display);font-weight:600;font-size:15px;letter-spacing:.01em;
+    color:var(--fg);text-shadow:0 1px 12px rgba(0,0,0,.5)}
+
+  /* ---------- film ---------- */
+  #film{position:relative;height:900vh}
+  .stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:#000}
+  .stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .world{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;opacity:0;will-change:transform,opacity}
+  .world img,.world svg{position:absolute;left:0;top:0;width:1920px;height:1080px;display:block}
+  .vignette{position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(to top, rgba(6,15,18,.78) 0%, rgba(6,15,18,0) 38%),
+               linear-gradient(to bottom, rgba(6,15,18,.45) 0%, rgba(6,15,18,0) 18%)}
+
+  /* ---------- testi ---------- */
+  .cap{position:absolute;left:clamp(20px,5vw,72px);bottom:clamp(28px,8vh,88px);max-width:34rem;
+    opacity:0;transform:translateY(12px);pointer-events:none}
+  .cap h2{font-family:var(--font-display);font-weight:600;font-size:clamp(26px,3.6vw,46px);
+    line-height:1.08;letter-spacing:-.015em}
+  .cap p{margin-top:.6em;font-size:clamp(15px,1.35vw,18px);line-height:1.5;color:#D9E2E4;max-width:30rem}
+  .stat{display:flex;align-items:baseline;gap:.35em;margin-top:.7em;font-family:var(--font-display)}
+  .stat b{font-size:clamp(34px,4.4vw,58px);font-weight:600;color:var(--teal);font-variant-numeric:tabular-nums}
+  .stat span{font-size:clamp(14px,1.2vw,17px);color:var(--muted)}
+  .cap.hero{bottom:auto;top:24vh}
+  .cap.hero h2{font-size:clamp(34px,5.6vw,76px);max-width:14ch}
+  .cap.end{pointer-events:auto}
+  .cta{display:inline-flex;gap:14px;flex-wrap:wrap;margin-top:1.2em}
+  .cta a{font-family:var(--font-display);font-weight:600;font-size:16px;text-decoration:none;
+    padding:14px 22px;border-radius:999px}
+  .cta .primary{background:var(--amber);color:#1b1206}
+  .cta .ghost{border:1px solid rgba(245,243,234,.35);color:var(--fg)}
+  .cta a:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+
+  .hint{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);font-size:13px;color:var(--muted);
+    letter-spacing:.02em}
+
+  .after{min-height:70vh;display:grid;place-items:center;padding:12vh 24px;text-align:center;color:var(--muted)}
+  .after h3{font-family:var(--font-display);color:var(--fg);font-size:28px;margin-bottom:.4em}
+
+  @media (max-width:640px){
+    .cap{right:20px}
+    .cap.hero{top:18vh}
+  }
+</style>
+</head>
+<body>
+<div class="brand">D&amp;C Technical Partner</div>
+
+<section id="film" aria-label="Il viaggio dell'energia">
+  <div class="stage" id="stage">
+    <video id="vid" src="film_scrub.mp4" muted playsinline preload="auto"></video>
+
+    <div class="world" id="world">
+      <img src="villa.jpg" alt="Villa con impianto fotovoltaico sul tetto, wallbox e auto elettrica">
+      <svg viewBox="0 0 1920 1080" aria-hidden="true">
+        <defs>
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="4" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="9"/>
+          </filter>
+          <linearGradient id="sheen" gradientUnits="userSpaceOnUse" x1="500" y1="0" x2="760" y2="0">
+            <stop offset="0" stop-color="#bff7ff" stop-opacity="0"/>
+            <stop offset=".5" stop-color="#e8fbff" stop-opacity=".55"/>
+            <stop offset="1" stop-color="#bff7ff" stop-opacity="0"/>
+          </linearGradient>
+          <mask id="flowMask" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080">
+            <path id="maskPath" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+          </mask>
+        </defs>
+
+        <!-- riflesso che scorre sui pannelli -->
+        <g id="panelSheen" opacity="0" style="mix-blend-mode:screen">
+          <polygon points="563,331 1220,274 1265,305 614,382" fill="url(#sheen)"/>
+          <polygon points="661,402 1320,312 1398,354 764,474" fill="url(#sheen)"/>
+        </g>
+
+        <!-- linea di energia: dal tetto alla parete accanto al garage -->
+        <g id="lines" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <g class="flow" data-path="M766,478 L749,489 Q745,492 745,497 L745,537 Q745,542 741,545 L644,605 Q640,608 640,613 L640,698">
+            <path class="halo" stroke="#2EE6B8" stroke-opacity=".45" stroke-width="18" filter="url(#soft)"/>
+            <path class="core" stroke="#1FCFA3" stroke-width="5.5"/>
+            <path class="inner" stroke="#7DF5D6" stroke-width="2.2"/>
+            <path class="stream" stroke="#F2FFFB" stroke-width="3" stroke-linecap="round" filter="url(#glow)" mask="url(#flowMask)"/>
+          </g>
+        </g>
+        <g id="dots"></g>
+        <!-- punto di ingresso sulla parete -->
+        <g id="entry" opacity="0">
+          <circle cx="640" cy="700" r="20" fill="#2EE6B8" opacity=".35" filter="url(#soft)"/>
+          <circle id="entryRing" cx="640" cy="700" r="7" fill="none" stroke="#2EE6B8" stroke-width="1.5"/>
+          <circle cx="640" cy="700" r="4.5" fill="#E6FFF8" filter="url(#glow)"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="vignette"></div>
+
+    <div class="cap hero" data-in="0" data-out=".07">
+      <h2>L'energia del sole, dal cielo fino a casa tua.</h2>
+      <p>Impianti fotovoltaici chiavi in mano, progettati e installati da D&amp;C Technical Partner.</p>
+    </div>
+    <div class="cap" data-in=".50" data-out=".68">
+      <h2>I pannelli catturano la luce.</h2>
+      <p>Venti moduli sul tetto trasformano il sole in energia elettrica.</p>
+      <div class="stat"><b id="kw">0,0</b><span>kW di potenza</span></div>
+    </div>
+    <div class="cap" data-in=".70" data-out=".95">
+      <h2>E la portano dentro casa.</h2>
+      <p>Il cavo scende dal tetto lungo la facciata fino al locale tecnico.</p>
+    </div>
+    <div class="hint" id="hint">Scorri per iniziare</div>
+  </div>
+</section>
+
+<section class="after">
+  <div>
+    <h3>Qui partirà il video dentro il locale tecnico</h3>
+    <p>Inverter e batterie, poi il resto del sito.</p>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+<script>
+(function(){
+  const W = 1920, H = 1080;
+  const film  = document.getElementById('film');
+  const stage = document.getElementById('stage');
+  const vid   = document.getElementById('vid');
+  const world = document.getElementById('world');
+  const hint  = document.getElementById('hint');
+  const caps  = [...document.querySelectorAll('.cap')];
+  const $ = id => document.getElementById(id);
+  const NS = 'http://www.w3.org/2000/svg';
+
+  /* ---------- utilità ---------- */
+  const clamp = (v,a,b)=>Math.min(b,Math.max(a,v));
+  const lerp  = (a,b,t)=>a+(b-a)*t;
+  const ease  = t=>t<.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2;
+  const seg   = (p,a,b)=>clamp((p-a)/(b-a),0,1);            // 0..1 dentro l'intervallo [a,b]
+
+  /* ---------- linee: lunghezze e puntini ---------- */
+  const flows = [...document.querySelectorAll('.flow')].map((g,i)=>{
+    const d = g.dataset.path;
+    g.querySelectorAll('path').forEach(p=>p.setAttribute('d', d));
+    const mp = document.getElementById('maskPath'); mp.setAttribute('d', d);
+    const core = g.querySelector('.core');
+    const len = core.getTotalLength();
+    [...g.querySelectorAll('path:not(.stream)'), mp].forEach(p=>{ p.style.strokeDasharray = len; p.style.strokeDashoffset = len; });
+    const st = g.querySelector('.stream'); st.style.strokeDasharray = '10 26';
+    const color = core.getAttribute('stroke');
+    const n = Math.max(1, Math.round(len/90));
+    const dots = [];
+    for (let k=0;k<n;k++){
+      const c = document.createElementNS(NS,'circle');
+      c.setAttribute('r','4.2'); c.setAttribute('fill', color === '#FFB84D' ? '#FFE3B5' : '#E6FFF8');
+      c.setAttribute('filter','url(#glow)'); c.setAttribute('opacity','0');
+      $('dots').appendChild(c); dots.push(c);
+    }
+    return { g, len, dots, draw:0, off:k=>k/n };
+  });
+
+  /* ---------- camera: punti di interesse sull'immagine ---------- */
+  //  p = avanzamento dello scroll (0..1); cx,cy in pixel dell'immagine 1920x1080; z = zoom
+  const CAM = [
+    [0.450,  960, 540, 1.00],
+    [0.480,  960, 540, 1.00],
+    [0.560,  930, 400, 1.70],   // pannelli
+    [0.680,  930, 400, 1.70],
+    [0.860,  660, 620, 2.20],   // parete accanto al garage
+    [1.000,  660, 620, 2.20],
+  ];
+  function camAt(p){
+    if (p <= CAM[0][0]) return CAM[0].slice(1);
+    for (let i=0;i<CAM.length-1;i++){
+      const a = CAM[i], b = CAM[i+1];
+      if (p <= b[0]){
+        const t = ease(seg(p,a[0],b[0]));
+        return [lerp(a[1],b[1],t), lerp(a[2],b[2],t), lerp(a[3],b[3],t)];
+      }
+    }
+    return CAM[CAM.length-1].slice(1);
+  }
+  function applyCam(cx,cy,z){
+    const vw = stage.clientWidth, vh = stage.clientHeight;
+    const s = Math.max(vw/W, vh/H) * z;                        // come object-fit: cover, poi zoom
+    let tx = vw/2 - cx*s, ty = vh/2 - cy*s;
+    tx = clamp(tx, vw - W*s, 0); ty = clamp(ty, vh - H*s, 0);  // l'immagine copre sempre lo schermo
+    world.style.transform = `translate(${tx}px,${ty}px) scale(${s})`;
+  }
+
+  /* ---------- video guidato dallo scroll ---------- */
+  let vDur = 10;
+  vid.addEventListener('loadedmetadata', ()=>{ vDur = vid.duration || 10; render(); });
+  // iOS: sblocca la riproduzione al primo tocco, così il video si può scorrere
+  window.addEventListener('touchstart', function unlock(){
+    vid.play().then(()=>vid.pause()).catch(()=>{});
+    window.removeEventListener('touchstart', unlock);
+  }, {passive:true});
+  let lastSeek = -1;
+  function seek(t){
+    if (Math.abs(t - lastSeek) < 1/48) return;
+    lastSeek = t;
+    try { vid.currentTime = t; } catch(e){}
+  }
+
+  /* ---------- stato che dipende dallo scroll ---------- */
+  let P = 0;
+  function progress(){
+    const r = film.getBoundingClientRect();
+    const total = film.offsetHeight - window.innerHeight;
+    return clamp(-r.top / total, 0, 1);
+  }
+  const fmt1 = v => v.toFixed(1).replace('.',',');
+
+  function render(){
+    const p = P;
+
+    // 1) video: 0 → 0,45
+    seek(seg(p, 0, 0.45) * Math.max(0, vDur - 0.05));
+    const imgOn = seg(p, 0.445, 0.46);
+    world.style.opacity = imgOn;
+    vid.style.opacity = 1 - imgOn;
+
+    const [cx,cy,z] = camAt(p);
+    applyCam(cx,cy,z);
+
+    // pannelli
+    $('panelSheen').setAttribute('opacity', (0.8 * seg(p,.50,.55) * (1 - seg(p,.80,.88))).toFixed(3));
+    $('kw').textContent = fmt1(6 * ease(seg(p,.51,.62)));
+
+    // linea che scende dal tetto alla parete (la camera la segue)
+    flows[0].draw = ease(seg(p,.68,.86));
+    flows.forEach(f=>{
+      const off = f.len * (1 - f.draw);
+      f.g.querySelectorAll('path:not(.stream)').forEach(pa=>pa.style.strokeDashoffset = off);
+      document.getElementById('maskPath').style.strokeDashoffset = off;
+    });
+    $('entry').setAttribute('opacity', seg(p,.85,.89).toFixed(3));
+    // didascalie: una sola alla volta, con dissolvenza breve
+    caps.forEach(c=>{
+      const a = +c.dataset.in, o = +c.dataset.out, f = 0.012;
+      const v = seg(p, a, a+f) * (1 - seg(p, o-f, o));
+      c.style.opacity = v.toFixed(3);
+      c.style.transform = `translateY(${(1-v)*12}px)`;
+      c.style.visibility = v > 0.001 ? 'visible' : 'hidden';
+    });
+    hint.style.opacity = 1 - seg(p, 0, 0.02);
+  }
+
+  /* ---------- puntini che scorrono in continuo sulle linee complete ---------- */
+  const t0 = performance.now();
+  function tick(now){
+    const t = (now - t0) / 1000;
+    flows.forEach(f=>{
+      const vis = seg(f.draw, .85, 1);
+      const cores = f.g.querySelector('.core');
+      f.dots.forEach((c,k)=>{
+        if (vis <= 0){ c.setAttribute('opacity','0'); return; }
+        const u = ((t * 120 / f.len) + f.off(k)) % 1;
+        const pt = cores.getPointAtLength(u * f.len);
+        c.setAttribute('cx', pt.x.toFixed(1)); c.setAttribute('cy', pt.y.toFixed(1));
+        const edge = Math.min(u, 1-u) * 8;                    // sfuma all'inizio e alla fine
+        c.setAttribute('opacity', (vis * Math.min(1, edge)).toFixed(3));
+      });
+    });
+    document.querySelectorAll('.stream').forEach(el=>el.style.strokeDashoffset = (-t*110).toFixed(1));
+    const ring = document.getElementById('entryRing');
+    const k = (t % 1.6)/1.6; ring.setAttribute('r', (7 + k*14).toFixed(1)); ring.setAttribute('opacity', (1-k).toFixed(2));
+    // riflesso che scorre sui pannelli
+    const x = 420 + ((t * 260) % 1200);
+    const g = document.getElementById('sheen');
+    g.setAttribute('x1', x); g.setAttribute('x2', x + 260);
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  /* ---------- scroll morbido ---------- */
+  const lenis = new Lenis({ lerp: 0.07, smoothWheel: true, wheelMultiplier: 0.45, touchMultiplier: 0.55 });
+  lenis.on('scroll', ()=>{ P = progress(); render(); });
+  function raf(time){ lenis.raf(time); requestAnimationFrame(raf); }
+  requestAnimationFrame(raf);
+  window.addEventListener('resize', ()=>{ P = progress(); render(); });
+  window.addEventListener('scroll', ()=>{ P = progress(); render(); }, {passive:true});
+
+  P = progress(); render();
+})();
+</script>
+</body>
+</html>
